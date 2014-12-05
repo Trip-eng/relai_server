@@ -10,14 +10,14 @@
 
 #include "sha1.h"
 #include "base64.h"
-#include "relai_server.h"
+#include "bcc_server.h"
 
 #define GUID "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
 char* getHandshake_Response(char *key, int len)
 {
     const char *resp = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ";
-    char *response = (char*)malloc(strlen(resp)+len+4+1);
+    char *response = malloc(strlen(resp)+len+4+1);
     strncpy(response, resp, strlen(resp));
     strncpy(response+strlen(resp), key, len);
     strcpy(response+strlen(resp)+len, "\r\n\r\n");
