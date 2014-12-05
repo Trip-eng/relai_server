@@ -3,6 +3,7 @@
 <head>
 <title>PI Relai</title>
 
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -30,51 +31,45 @@ function connect(server)
 	ws.onmessage = onReseve;
 	ws.onclose = onDisonnect;
 
-	
-
-	ws.onerror = function(evt)
-	{
-		console.log("The following error occurred: " + evt.data);
-	}
+	ws.onerror = function(evt) { }
 	
 	if(ws.readyState == 0)
 	{
 		setAlert("Connecting ... ", "info");
-		setDisabled(true);
+		disablAll();
 	}
 }
 
 function onWindowColse()
 {
-	//document.cookie = '{ "nick":"'+document.getElementById("tbNick").value+'" , "ip":"'+ defaultServer +'" }'; ;
 	ws.close();
 }
 
 function onConnect()
 {
 	setAlert("Connected", "success", true);
-	setDisabled(false);
 	window.setTimeout(resetAlert, 5000);
 }
 
-function sendMessage(relais, state)
+function sendMessage(relai, state)
 {
-    var frame = '{ "relais":"'+relais+'","state":"'+state+'" }';
+    var frame = '{ "relai":"'+relai+'","state":"'+state+'" }';
+    //console.log("send:" + frame);
     ws.send(frame);
-    console.log("send:" + frame);
+    
 }
 
 function onReseve(evt)
 {
     var received_msg = evt.data;
     var jsonmsg = JSON.parse(received_msg);
-    addMessage(jsonmsg.nick, jsonmsg.ip, jsonmsg.msg);
+    setButState(jsonmsg.relai,jsonmsg.state);
 }
 
 function onDisonnect()
 {
 	setAlert("<strong>Not Conectet !<strong> <a href=\"javascript:connect()\" class=\"alert-link\">try to connect<a>","danger");
-	setDisabled(true);
+	disablAll();
 }
 
 function setAlert(message,type,closeable)
@@ -92,12 +87,52 @@ function resetAlert()
 {
 	document.getElementById("alert").innerHTML ="";
 }
-function setDisabled(disabled)
+
+function setButState(butNumber, state)
 {
-	document.getElementById("tbNick").readOnly = disabled;
-	document.getElementById("taMessage").readOnly = disabled;
-	document.getElementById("butSend").disabled  = disabled;
+	console.log("but" + butNumber);
+	var but = document.getElementById("but" + butNumber);
+	console.log(but);
+	if(state == "on")
+	{
+		but.state = "on";
+		but.disabled = false;
+		but.className = "btn btn-success";
+	} 
+	else if(state == "off")
+	{
+		but.state = "off";
+		but.disabled = false;
+		but.className = "btn btn-danger";
+	}
+	else 
+	{
+		but.state = "disabled";
+		but.disabled = true;
+		but.className = "btn btn-default";
+	}
 }
+
+function onButClick(butNumber)
+{
+	var but = document.getElementById("but" + butNumber);
+	if(but.state == "on")
+	{
+		sendMessage(butNumber,"off");
+	}
+	else if(but.state == "off")
+	{
+		sendMessage(butNumber,"on");
+	}
+}
+
+function disablAll()
+{
+	for (var i = 0; i < 4; i++) {
+		setButState(i);
+	};
+}
+
 </script>
 </head>
 <body>
@@ -110,7 +145,18 @@ function setDisabled(disabled)
 <div id="alert"></div>
 <div id="main" style="max-width:100%; width: 600px; text-align:center;" >
 <!-- btn btn-default success danger -->
-<button type="button" class="btn btn-success">Licht</button>
+<button id="but0" type="button" class="btn btn-default" onclick="onButClick(0);" disabled >
+	But1
+</button><br>
+<button id="but1" type="button" class="btn btn-default" onclick="onButClick(1);" disabled >
+	But2
+</button><br>
+<button id="but2" type="button" class="btn btn-default" onclick="onButClick(2);" disabled >
+	But3
+</button><br>
+<button id="but3" type="button" class="btn btn-default" onclick="onButClick(3);" disabled >
+	But4
+</button><br>
 </div>
 </div>
 </div>

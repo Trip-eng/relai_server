@@ -145,14 +145,14 @@ void closeSocket(int socket)
 
 void receivedText(json_object *json, struct BCC_User *user)
 {
-	char *relais;
+	char *relai;
 	char *state;
 	json_object_object_foreach(json, key, val)
 	{
 		const char *v = json_object_get_string(val);
-		if (strcmp(key, "relais") == 0) {
+		if (strcmp(key, "relai") == 0) {
 			relais = malloc(strlen(v)+1);
-			strcpy(relais, v);
+			strcpy(relai, v);
 			relais[strlen(v)] = '\0';
 		} else if (strcmp(key, "state") == 0) {
 			state = malloc(strlen(v)+1);
@@ -163,14 +163,14 @@ void receivedText(json_object *json, struct BCC_User *user)
 	json_object_put (json);
 	char *ip = user->ip;
 	
-	int relai = atoi(relais);
+	int relaiInt = atoi(relai);
 	if(strcmp(state, "on") == 0)
 	{
-		setRelaiState(relai, 1);
+		setRelaiState(relaiInt, 1);
 	}
 	else if(strcmp(state, "off") == 0)
 	{
-		setRelaiState(relai, 0);
+		setRelaiState(relaiInt, 0);
 	}
 	
 	//sendToAll(x)
