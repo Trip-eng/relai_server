@@ -29,7 +29,8 @@ struct BCC_User *users;
 int numClientSockets = 0;
 struct sockaddr_in broadcastAddr;
 
-void receivedText(json_object *jobj,struct BCC_User *user);
+void receivedText(char *outBuffer, struct BCC_User *user);
+char* getJsonString(int relai,char state);
 //CODE
 
 void error(char *msg)
@@ -143,17 +144,18 @@ void closeSocket(int socket)
     numClientSockets--;
 }
 
-void receivedText(json_object *json, struct BCC_User *user)
+void receivedText(char *outBuffer, struct BCC_User *user)
 {
+        json_object *json = json_tokener_parse((char*)outBuffer);
 	char *relai;
 	char *state;
 	json_object_object_foreach(json, key, val)
 	{
 		const char *v = json_object_get_string(val);
 		if (strcmp(key, "relai") == 0) {
-			relais = malloc(strlen(v)+1);
+			relai = malloc(strlen(v)+1);
 			strcpy(relai, v);
-			relais[strlen(v)] = '\0';
+			relai[strlen(v)] = '\0';
 		} else if (strcmp(key, "state") == 0) {
 			state = malloc(strlen(v)+1);
 			strcpy(state, v);
@@ -173,10 +175,11 @@ void receivedText(json_object *json, struct BCC_User *user)
 		setRelaiState(relaiInt, 0);
 	}
 	
-	//sendToAll(x)
+	sendToAll(outBuffer);
 
-	free(relais);
+	free(relai);
 	free(state);
+        json_object_put (json);
 }
 
 //MAIN
@@ -211,11 +214,11 @@ void* clientMain(void *arg)
             if (n < 0) logStr("ERROR reading socket failed");
 	    //printf("recive text ");
 	    //printf((char*)outBuffer);
-            json_object *json = json_tokener_parse((char*)outBuffer);
+            //json_object *json = json_tokener_parse((char*)outBuffer);
 
-	    receivedText(json,user);
+	    receivedText((char*)outBuffer,user);
 
-            json_object_put (json);
+            //json_object_put (json);
             free(outBuffer);
         }else if(opcode == 10)
         {
@@ -298,13 +301,32 @@ int listenSocketServer(int argc, char *argv[])
         user->next = NULL;
 
         numClientSockets++;
+	
         //new thread for every client
         pthread_t pth;
         pthread_create(&pth,NULL, clientMain, &clientSock);
+	
+	for (int i = 0; i < 10; i++)
+	{
+            writeFrame(clientSock,getJsonString(i,getRelaiState(i)));
+	}
     }
     
     logStr("closing server\n");
     return 0; 
+}
+
+char* getJsonString(int relai,char state)
+{
+	json_object *json = json_object_new_object();
+        json_object_object_add(json, "relai", json_object_new_int(relai));
+	if(state == 0)        
+		json_object_object_add(json, "state", json_object_new_string("off"));
+	else if (state == 1)
+        	json_object_object_add(json, "state", json_object_new_string("on"));
+
+        return json_object_to_json_string(json);
+        //const char *s = json_object_to_json_string(json);
 }
 
 /*
