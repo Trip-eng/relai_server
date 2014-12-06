@@ -42,12 +42,11 @@ void error(char *msg)
 void logStr(char *str)
 {
     //no log because of daemon
-    printf("%s\n", str);
+    //printf("%s\n", str);
 }
 
 int main(int argc, char *argv[])
 {
-    /*
     //daemon
     pid_t pid, sid;
     pid = fork();
@@ -58,7 +57,6 @@ int main(int argc, char *argv[])
     if (sid < 0) {
         exit(EXIT_FAILURE);	
     }
-    */
 	
     initRelai();    
     //listen for incomming connections
