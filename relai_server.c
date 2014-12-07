@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
 	
     initRelai();    
     //listen for incomming connections
-    printf("started\n");
     listenSocketServer(argc, argv);
     return 1;
 }
