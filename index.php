@@ -6,8 +6,10 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<!--
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-
+-->
 
 <script type="text/javascript">
 var localTest = false;
@@ -145,18 +147,12 @@ function disablAll()
 <div id="alert"></div>
 <div id="main" style="max-width:100%; width: 600px; text-align:center;" >
 <div class="btn-group-vertical btn-group-lg" role="group">
-<button id="but0" type="button" class="btn btn-default" onclick="onButClick(0);" disabled >
-Decken Licht
-</button>
-<button id="but1" type="button" class="btn btn-default" onclick="onButClick(1);" disabled >
-Lichterkette
-</button>
-<button id="but2" type="button" class="btn btn-default" onclick="onButClick(2);" disabled >
-Schreibtischlampe
-</button>
-<button id="but3" type="button" class="btn btn-default" onclick="onButClick(3);" disabled >
-Case
-</button>
+
+<?php
+for ($i=0; $i < 8 ; $i++) { 
+	echo '<button id="but' . $i . '" type="button" class="btn btn-default" onclick="onButClick(' . $i . ');" disabled >Relai ' . ($i+1) . ' </button>';
+}
+?>
 </div>
 </div>
 </div>
