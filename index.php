@@ -6,10 +6,10 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<link rel="stylesheet" href="css/bootstrap.min.css">
 <!--
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
 <script type="text/javascript">
 var localTest = false;
@@ -130,7 +130,7 @@ function onButClick(butNumber)
 
 function disablAll()
 {
-	for (var i = 0; i < 4; i++) {
+	for (var i = 0; i < 8; i++) {
 		setButState(i);
 	};
 }
