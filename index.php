@@ -1,7 +1,20 @@
 <!DOCTYPE HTML>
+<?php
+$headline = "PI Relai";
+$relais = array(
+    0 => "Relai 1",
+    1 => "Relai 2",
+    2 => "Relai 3",
+    3 => "Relai 4",
+    4 => "Relai 5",
+    5 => "Relai 6",
+    6 => "Relai 7",
+    7 => "Relai 8",
+);
+?>
 <html>
 <head>
-<title>PI Relai</title>
+<title><?php echo $headline ?></title>
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -9,9 +22,11 @@
 <!--
 <link rel="stylesheet" href="css/bootstrap.min.css">
 -->
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
 <script type="text/javascript">
+
 var localTest = false;
 var defaultServer = "raspberrypi";
 var ws;
@@ -141,7 +156,7 @@ function disablAll()
 <center>
 <div id="page" style="max-width: 600px; text-align:center;">
 <div id="pageheader" style="text-align:center;">
-	<h1>PI Relai</h1><br>
+	<h1><?php echo $headline ?></h1><br>
 </div>
 <div id="pagebody" style="text-align:left;">
 <div id="alert"></div>
@@ -149,8 +164,8 @@ function disablAll()
 <div class="btn-group-vertical btn-group-lg" role="group">
 
 <?php
-for ($i=0; $i < 8 ; $i++) { 
-	echo '<button id="but' . $i . '" type="button" class="btn btn-default" onclick="onButClick(' . $i . ');" disabled >Relai ' . ($i+1) . ' </button>';
+foreach ($relais as $i => $value) { 
+	echo '<button id="but' . $i . '" type="button" class="btn btn-default" onclick="onButClick(' . $i . ');" disabled >' . $value . ' </button>';
 }
 ?>
 </div>
