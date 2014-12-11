@@ -64,8 +64,9 @@ function onWindowColse()
 
 function onConnect()
 {
-	setAlert("Connected", "success", true);
-	window.setTimeout(resetAlert, 5000);
+	resetAlert();
+	//setAlert("Connected", "success", true);
+	//window.setTimeout(resetAlert, 5000);
 }
 
 function sendMessage(relai, state)
