@@ -25,24 +25,29 @@
 #define MAXCLIENTS 30
 
 //globals
-struct BCC_User *users;
+struct WS_User *users;
 int numClientSockets = 0;
 struct sockaddr_in broadcastAddr;
+FILE *f = fopen("/var/log/relai_server.log", "a+");
 
-void receivedText(char *outBuffer, struct BCC_User *user);
-char* getJsonString(int relai,char state);
 //CODE
-
 void error(char *msg)
 {
     printf("%s\n", msg);
-    perror(&msg[0]);
+    
     //exit(1);
 }
 void logStr(char *str)
 {
-    //no log because of daemon
     //printf("%s\n", str);
+    fprintf(f, "%s\n", str);
+
+}
+void logStr(char *str1, char *str2)
+{
+    //no log because of daemon
+    //printf("%s %s\n", str1, str2);
+    fprintf(f, "%s %s\n", str1, str2);
 }
 
 int main(int argc, char *argv[])
@@ -61,7 +66,7 @@ int main(int argc, char *argv[])
     initRelai();    
     //listen for incomming connections
     listenSocketServer(argc, argv);
-    return 1;
+    return 0;
 }
 
 char *packFrame(char *msg)
@@ -99,9 +104,9 @@ void writeFrame(int sock, char *s)
     free(s2);
 }
 
-struct BCC_User* getUserWithSocket(int socket)
+struct WS_User* getUserWithSocket(int socket)
 {
-    struct BCC_User *user = users;
+    struct WS_User *user = users;
     while (user != NULL) 
     {
         if(user->socket == socket) return user;
@@ -109,9 +114,9 @@ struct BCC_User* getUserWithSocket(int socket)
     }
 }
 
-struct BCC_User* getUserWithNext(struct BCC_User *u)
+struct WS_User* getUserWithNext(struct WS_User *u)
 {
-    struct BCC_User *user = users;
+    struct WS_User *user = users;
     while (user != NULL) 
     {
         if(user->next == u) return user;
@@ -123,9 +128,9 @@ void closeSocket(int socket)
 {
     //remove socket
 
-    struct BCC_User *user = getUserWithSocket(socket);
+    struct WS_User *user = getUserWithSocket(socket);
     if(user == NULL) return;
-    struct BCC_User *parent = getUserWithNext(user);
+    struct WS_User *parent = getUserWithNext(user);
     if(parent != NULL)
     {
         if(user->next != NULL) parent->next = user->next;
@@ -136,12 +141,12 @@ void closeSocket(int socket)
         else users = NULL;
     }
     close(socket);
-    logStr("socket closed");
+    logStr("Disconect", user->ip);
     free(user);
     numClientSockets--;
 }
 
-void receivedText(char *outBuffer, struct BCC_User *user)
+void receivedText(char *outBuffer, struct WS_User *user)
 {
         json_object *json = json_tokener_parse((char*)outBuffer);
 	char *relai;
@@ -187,7 +192,7 @@ void* clientMain(void *arg)
     int n;
     int socket = *(int*)arg;
 
-    struct BCC_User *user = getUserWithSocket(socket);
+    struct WS_User *user = getUserWithSocket(socket);
     while(1)
     {
         memset((char *) &buffer, '\0', MAXBUFLEN);
@@ -205,7 +210,7 @@ void* clientMain(void *arg)
             uint8_t *outBuffer = parse((const uint8_t*)buffer, n, &len);
             if(outBuffer == NULL) 
             {
-                logStr("ERROR reading / parsing frame failed");
+                logStr("ERROR reading / parsing frame failed : ");
                 continue;
             };
             if (n < 0) logStr("ERROR reading socket failed");
@@ -220,11 +225,11 @@ void* clientMain(void *arg)
         }else if(opcode == 10)
         {
             //pong!
-            logStr("PONG! received");
+            //logStr("PONG! received");
         }else if(opcode == 9)
         {
             //ping!
-            logStr("PING! received");
+            //logStr("PING! received");
             char *pckt = packFrame("PING");
             pckt[0] = (char)0b10001001;
             write(socket, pckt, strlen(pckt));
@@ -274,12 +279,11 @@ int listenSocketServer(int argc, char *argv[])
             logStr("ERROR accepting new socket failed");
             continue;
         }
-        logStr("connected");
 
         //handshake
         handshake(clientSock);
 
-        struct BCC_User *user = malloc(sizeof(struct BCC_User));
+        struct WS_User *user = malloc(sizeof(struct WS_User));
         if(user == NULL)
         {
             logStr("error allocating user\n");
@@ -288,7 +292,7 @@ int listenSocketServer(int argc, char *argv[])
         if(users == NULL) users = user;
         else 
         {
-            struct BCC_User *last = getUserWithNext(NULL);
+            struct WS_User *last = getUserWithNext(NULL);
             last->next = user;
         }
         
@@ -296,6 +300,8 @@ int listenSocketServer(int argc, char *argv[])
         strcpy(user->ip, inet_ntoa(cli_addr.sin_addr));
         user->ip[39] = '\0';
         user->next = NULL;
+
+        logStr("Connect", user->ip);
 
         numClientSockets++;
 	
@@ -309,7 +315,7 @@ int listenSocketServer(int argc, char *argv[])
 	}
     }
     
-    logStr("closing server\n");
+    logStr("Closing server");
     return 0; 
 }
 
@@ -321,24 +327,14 @@ char* getJsonString(int relai,char state)
 		json_object_object_add(json, "state", json_object_new_string("off"));
 	else if (state == 1)
         	json_object_object_add(json, "state", json_object_new_string("on"));
+    //const char *s = json_object_to_json_string(json);
+    return json_object_to_json_string(json);
+}    
 
-        return json_object_to_json_string(json);
-        //const char *s = json_object_to_json_string(json);
-}
-
-/*
-	json_object *json = json_object_new_object();
-        json_object_object_add(json, "nick", jsostartwhileeeeeeeeeg(bccmsg->nick));
-        json_object_object_add(json, "ip", json_object_new_string(bccmsg->ipAddr));
-        json_object_object_add(json, "msg", json_object_new_string(bccmsg->msg));
-
-        const char *s = json_object_to_json_string(json);
-	...
-        json_object_put (json);*/
 
 void sendToAll(char *s)
 {
-        struct BCC_User *user = users;
+        struct WS_User *user = users;
         while (user != NULL) 
         {
             int error;
