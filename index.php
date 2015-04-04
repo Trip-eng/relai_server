@@ -2,9 +2,9 @@
 <?php
 $headline = "PI Relai";
 $relais = array(
-    0 => "Relai 1",
-    1 => "Relai 2",
-    2 => "Relai 3",
+    0 => "Lichterkette",
+    1 => "Schrank",
+    2 => "Schreibtisch",
     3 => "Relai 4",
     4 => "Relai 5",
     5 => "Relai 6",
@@ -28,7 +28,7 @@ $relais = array(
 <script type="text/javascript">
 
 var localTest = false;
-var defaultServer = "raspberrypi";
+var defaultServer = "192.168.188.38";
 var ws;
 
 window.onbeforeunload = onWindowColse;

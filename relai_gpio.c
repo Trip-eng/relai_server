@@ -1,6 +1,6 @@
 #include <wiringPi.h>
 
-int pins[10] = {0,1,2,3,4,5,6,7,8,9};
+int pins[8] = {0,1,2,3,4,5,6,7};
 
 void initRelai() {
 	if (wiringPiSetup() == -1)
@@ -13,10 +13,10 @@ void initRelai() {
 
 void setRelaiState(int relai, int state)
 {
-  	digitalWrite(pins[relai], state);
+  	digitalWrite(pins[relai],( state + 1) % 2);
 }
 
 int getRelaiState(int relai)
 {
-  	return digitalRead(pins[relai]);
+	return (digitalRead(pins[relai]) + 1) % 2;
 }

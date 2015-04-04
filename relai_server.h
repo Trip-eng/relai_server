@@ -14,7 +14,7 @@ void closeSocket(int socket);
 //methods
 void error(char *msg);
 void sendToAll(char *s);
-void receivedText(char *outBuffer, struct BCC_User *user);
+void receivedText(char *outBuffer, struct WS_User *user);
 char* getJsonString(int relai,char state);
 
 //MAIN

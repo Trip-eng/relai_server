@@ -28,7 +28,7 @@
 struct WS_User *users;
 int numClientSockets = 0;
 struct sockaddr_in broadcastAddr;
-FILE *f = fopen("/var/log/relai_server.log", "a+");
+FILE *f;
 
 //CODE
 void error(char *msg)
@@ -43,7 +43,7 @@ void logStr(char *str)
     fprintf(f, "%s\n", str);
 
 }
-void logStr(char *str1, char *str2)
+void logStr2(char *str1, char *str2)
 {
     //no log because of daemon
     //printf("%s %s\n", str1, str2);
@@ -52,6 +52,7 @@ void logStr(char *str1, char *str2)
 
 int main(int argc, char *argv[])
 {
+    f = fopen("/var/log/relai_server.log", "a+");
     //daemon
     pid_t pid, sid;
     pid = fork();
@@ -141,7 +142,7 @@ void closeSocket(int socket)
         else users = NULL;
     }
     close(socket);
-    logStr("Disconect", user->ip);
+    logStr2("Disconect", user->ip);
     free(user);
     numClientSockets--;
 }
@@ -301,7 +302,7 @@ int listenSocketServer(int argc, char *argv[])
         user->ip[39] = '\0';
         user->next = NULL;
 
-        logStr("Connect", user->ip);
+        logStr2("Connect", user->ip);
 
         numClientSockets++;
 	
