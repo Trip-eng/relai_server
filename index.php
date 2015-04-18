@@ -5,12 +5,16 @@ $relais = array(
     0 => "Lichterkette",
     1 => "Schrank",
     2 => "Schreibtisch",
-    3 => "Relai 4",
-    4 => "Relai 5",
-    5 => "Relai 6",
-    6 => "Relai 7",
-    7 => "Relai 8",
+    3 => "case",
 );
+if(isset($_GET['ip']))
+{
+	$ip = $_GET['ip'];
+}
+else
+{
+	$ip = $_SERVER['SERVER_ADDR']; 
+}
 ?>
 <html>
 <head>
@@ -28,7 +32,8 @@ $relais = array(
 <script type="text/javascript">
 
 var localTest = false;
-var defaultServer = "192.168.188.38";
+
+var defaultServer = "<?php echo $ip; ?>";
 var ws;
 
 window.onbeforeunload = onWindowColse;
@@ -108,9 +113,9 @@ function resetAlert()
 
 function setButState(butNumber, state)
 {
-	console.log("but" + butNumber);
 	var but = document.getElementById("but" + butNumber);
-	console.log(but);
+	if(but == null) return;
+	console.log("but" + butNumber + " : " + state);
 	if(state == "on")
 	{
 		but.state = "on";
@@ -150,10 +155,37 @@ function disablAll()
 		setButState(i);
 	};
 }
-
+function keyDown(event)
+{
+	event = event || window.event;
+	if (event.keyCode >= 49 && event.keyCode <= 57) // 1-9
+	{
+		onButClick(event.keyCode - 49);
+	}
+	else if (event.keyCode >= 65 && event.keyCode <= 90) // A-Z
+	{
+		var shiftKey = event.shiftKey;
+		switch(String.fromCharCode(event.keyCode)) {
+			case 'C':
+				onButClick(3);
+				break;
+			case 'L':
+				var state = shiftKey ? "off" : "on";
+				var wait = 50;
+				setTimeout(function(){sendMessage(0,state);}, 0*wait);
+				setTimeout(function(){sendMessage(1,state);}, 1*wait);
+				setTimeout(function(){sendMessage(2,state);}, 2*wait);
+				break;
+		}
+	}
+	else if (event.keyCode >= 97 && event.keyCode <= 105) // 1-9 Num
+	{
+		onButClick(event.keyCode - 97);
+	}
+}
 </script>
 </head>
-<body>
+<body onkeydown="keyDown()">
 <center>
 <div id="page" style="max-width: 600px; text-align:center;">
 <div id="pageheader" style="text-align:center;">
