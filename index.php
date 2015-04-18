@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <?php
 $headline = "PI Relai";
 $relais = array(
@@ -30,14 +29,10 @@ else
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
 <script type="text/javascript">
-
 var localTest = false;
-
 var defaultServer = "<?php echo $ip; ?>";
 var ws;
-
 window.onbeforeunload = onWindowColse;
-
 function connect(server)
 {
 	if(server != null && server != "")
@@ -52,7 +47,6 @@ function connect(server)
 	ws.onopen = onConnect;
 	ws.onmessage = onReseve;
 	ws.onclose = onDisonnect;
-
 	ws.onerror = function(evt) { }
 	
 	if(ws.readyState == 0)
@@ -61,19 +55,16 @@ function connect(server)
 		disablAll();
 	}
 }
-
 function onWindowColse()
 {
 	ws.close();
 }
-
 function onConnect()
 {
 	resetAlert();
 	//setAlert("Connected", "success", true);
 	//window.setTimeout(resetAlert, 5000);
 }
-
 function sendMessage(relai, state)
 {
     var frame = '{ "relai":"'+relai+'","state":"'+state+'" }';
@@ -81,20 +72,17 @@ function sendMessage(relai, state)
     ws.send(frame);
     
 }
-
 function onReseve(evt)
 {
     var received_msg = evt.data;
     var jsonmsg = JSON.parse(received_msg);
     setButState(jsonmsg.relai,jsonmsg.state);
 }
-
 function onDisonnect()
 {
 	setAlert("<strong>Not Conectet !<strong> <a href=\"javascript:connect()\" class=\"alert-link\">try to connect<a>","danger");
 	disablAll();
 }
-
 function setAlert(message,type,closeable)
 {
     var htmlText = "";
@@ -110,7 +98,6 @@ function resetAlert()
 {
 	document.getElementById("alert").innerHTML ="";
 }
-
 function setButState(butNumber, state)
 {
 	var but = document.getElementById("but" + butNumber);
@@ -135,7 +122,6 @@ function setButState(butNumber, state)
 		but.className = "btn btn-default";
 	}
 }
-
 function onButClick(butNumber)
 {
 	var but = document.getElementById("but" + butNumber);
@@ -148,7 +134,6 @@ function onButClick(butNumber)
 		sendMessage(butNumber,"on");
 	}
 }
-
 function disablAll()
 {
 	for (var i = 0; i < 8; i++) {
@@ -182,6 +167,19 @@ function keyDown(event)
 	{
 		onButClick(event.keyCode - 97);
 	}
+	if (document.getElementById("tb") != null) 
+		document.getElementById("tb").value="";
+}
+function isMobile() {
+    if (sessionStorage.desktop) 
+        return false;
+    else if (localStorage.mobile)
+        return true;
+    var mobile = ['iphone','ipad','android','blackberry','nokia','opera mini','windows mobile','windows phone','iemobile']; 
+    for (var i in mobile) if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) return true;
+
+    // nothing found.. assume desktop
+    return false;
 }
 </script>
 </head>
@@ -194,7 +192,7 @@ function keyDown(event)
 <div id="pagebody" style="text-align:left;">
 <div id="alert"></div>
 <div id="main" style="max-width:100%; width: 600px; text-align:center;" >
-<div class="btn-group-vertical btn-group-lg" role="group">
+<div class="btn-group-vertical btn-group-lg" role="group" id="but-group">
 
 <?php
 foreach ($relais as $i => $value) { 
@@ -211,6 +209,10 @@ if(localTest)
 	onConnect();
 else
 	connect();
+if(isMobile())
+	document.getElementById("but-group").innerHTML += "<input type=\"text\" id=\"tb\">";
+
 </script>
 </body>
 </html>
+
