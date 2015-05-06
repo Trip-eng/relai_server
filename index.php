@@ -4,6 +4,7 @@ $relais = array(
     0 => "Lichterkette",
     1 => "Schrank",
     2 => "Schreibtisch",
+    4 => "Decke",
     3 => "case",
 );
 if(isset($_GET['ip']))
@@ -150,16 +151,24 @@ function keyDown(event)
 	else if (event.keyCode >= 65 && event.keyCode <= 90) // A-Z
 	{
 		var shiftKey = event.shiftKey;
+		var state = shiftKey ? "off" : "on";
+		var wait = 50;
 		switch(String.fromCharCode(event.keyCode)) {
+			case 'A':
+				setTimeout(function(){sendMessage(0,state);}, 0*wait);
+				setTimeout(function(){sendMessage(1,state);}, 1*wait);
+				setTimeout(function(){sendMessage(2,state);}, 2*wait);
+				setTimeout(function(){sendMessage(3,state);}, 3*wait);
+				setTimeout(function(){sendMessage(4,state);}, 4*wait);
+				break;
 			case 'C':
 				onButClick(3);
 				break;
 			case 'L':
-				var state = shiftKey ? "off" : "on";
-				var wait = 50;
 				setTimeout(function(){sendMessage(0,state);}, 0*wait);
 				setTimeout(function(){sendMessage(1,state);}, 1*wait);
 				setTimeout(function(){sendMessage(2,state);}, 2*wait);
+				setTimeout(function(){sendMessage(4,state);}, 4*wait);
 				break;
 		}
 	}
