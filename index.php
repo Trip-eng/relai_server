@@ -73,11 +73,23 @@ function sendMessage(relai, state)
     ws.send(frame);
     
 }
+function sendMessage(relai, state, color)
+{
+    var frame = '{ "relai":"'+relai+'","state":"'+state+'","color":"'+color+'" }';
+    // console.log("send:" + frame);
+    ws.send(frame);
+    
+}
 function onReseve(evt)
 {
     var received_msg = evt.data;
     var jsonmsg = JSON.parse(received_msg);
-    setButState(jsonmsg.relai,jsonmsg.state);
+	if (jsonmsg.state == "color")
+	{
+		setColorState(jsonmsg.relai,jsonmsg.color);
+	}
+	else
+		setButState(jsonmsg.relai,jsonmsg.state);
 }
 function onDisonnect()
 {
@@ -98,6 +110,11 @@ function setAlert(message,type,closeable)
 function resetAlert()
 {
 	document.getElementById("alert").innerHTML ="";
+}
+function setColorState(Number, color)
+{
+	var element = document.getElementById("color" + Number);
+	element.value = "#" + color;
 }
 function setButState(butNumber, state)
 {
@@ -134,6 +151,10 @@ function onButClick(butNumber)
 	{
 		sendMessage(butNumber,"on");
 	}
+}
+function onColorClick(nur,Color)
+{
+	sendMessage(nur,"color",Color.substring(1, Color.length));
 }
 function disablAll()
 {
@@ -205,7 +226,13 @@ function isMobile() {
 
 <?php
 foreach ($relais as $i => $value) { 
-	echo '<button id="but' . $i . '" type="button" class="btn btn-default" onclick="onButClick(' . $i . ');" disabled >' . $value . ' </button>';
+	echo '<button id="but' . $i . '" type="button" class="btn btn-default" onclick="onButClick(' . $i . ');" disabled >' . $value . ' </button>
+';
+if ($i == 1)
+{
+	echo '<input id="color'.$i.'" type=Color onChange="onColorClick('.$i.',document.getElementById(\'color'.$i.'\').value)" width="100%" ></input>
+';
+}
 }
 ?>
 </div>
