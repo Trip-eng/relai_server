@@ -152,6 +152,9 @@ void receivedText(char *outBuffer, struct WS_User *user)
         json_object *json = json_tokener_parse((char*)outBuffer);
 	char *relai;
 	char *state;
+	char *color;
+
+
 	json_object_object_foreach(json, key, val)
 	{
 		const char *v = json_object_get_string(val);
@@ -163,6 +166,10 @@ void receivedText(char *outBuffer, struct WS_User *user)
 			state = malloc(strlen(v)+1);
 			strcpy(state, v);
 			state[strlen(v)] = '\0';
+		} else if (strcmp(key, "color") == 0) {
+			color = malloc(strlen(v)+1);
+			strcpy(color, v);
+			color[strlen(v)] = '\0';
 		}
 	}
 	json_object_put (json);
@@ -173,10 +180,18 @@ void receivedText(char *outBuffer, struct WS_User *user)
 	{
 		setRelaiState(relaiInt, 1);
 	}
+
 	else if(strcmp(state, "off") == 0)
 	{
 		setRelaiState(relaiInt, 0);
 	}
+	else if(strcmp(state, "color") == 0)
+	{
+		unsigned long i = 0;
+		i = strtoul(color ,0,16);
+		sendTWI(i);
+	}
+
 	
 	sendToAll(outBuffer);
 

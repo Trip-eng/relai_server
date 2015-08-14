@@ -4,5 +4,6 @@
 void initRelai() ;
 void setRelaiState(int relai, int state);
 int getRelaiState(int relai);
+void sendTWI(long data);
 
 #endif

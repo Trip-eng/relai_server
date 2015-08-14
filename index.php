@@ -1,10 +1,10 @@
 <?php
 $headline = "PI Relai";
 $relais = array(
+    4 => "Decke",
     0 => "Lichterkette",
     1 => "Schrank",
     2 => "Schreibtisch",
-    4 => "Decke",
     3 => "case",
 );
 if(isset($_GET['ip']))
