@@ -5,7 +5,6 @@ $relais = array(
     0 => "Lichterkette",
     1 => "Schrank",
     2 => "Schreibtisch",
-    3 => "case",
 );
 if(isset($_GET['ip']))
 {
