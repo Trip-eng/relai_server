@@ -1,6 +1,6 @@
 #include <wiringPi.h>
 
-int pins[8] = {29,5,4,0,3,0,0,0};
+int pins[8] = {29,5,4,15,3,7,9,8};
 int SCL = 24;
 int SDA = 25;
 void initRelai() {
