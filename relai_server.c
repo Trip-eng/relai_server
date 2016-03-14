@@ -189,7 +189,7 @@ void receivedText(char *outBuffer, struct WS_User *user)
 	{
 		unsigned long i = 0;
 		i = strtoul(color ,0,16);
-		sendTWI(i);
+		TWIsend(i);
 	}
 
 	
